@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status da Ordem de Serviço - ABM Tech</title>
+    
+    <!-- Bootstrap e FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS externo -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <a href="index.html" class="btn btn-outline-light mb-4 rounded-pill px-4">
+                <i class="fa-solid fa-arrow-left me-2"></i>Voltar ao Início
+            </a>
+            
+            <div class="card card-dark p-4 p-md-5 text-center shadow-lg">
+                <h3 class="fw-bold mb-3 text-white">
+                    <i class="fa-solid fa-magnifying-glass text-info me-2"></i>Consultar OS
+                </h3>
+                <p class="text-light small mb-4">Digite o código recebido para acompanhar o seu conserto.</p>
+                
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control form-control-lg" id="codigoBusca" placeholder="Ex: ABM-8492">
+                    <button class="btn btn-primary fw-bold px-4" onclick="consultarOS()">Buscar</button>
+                </div>
+
+                <div id="painelStatus" class="mt-4 p-4 border border-secondary rounded-3 bg-dark text-start d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="fw-bold text-white">Código: <span id="lblCodigo" class="text-info">ABM-8492</span></span>
+                        <span id="lblStatus" class="badge bg-warning text-dark fs-6">Em Manutenção</span>
+                    </div>
+                    <p class="mb-1 text-light small">Detalhes do Serviço:</p>
+                    <p id="lblDetalhes" class="fw-semibold text-white">Aparelho na bancada a realizar testes de componentes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE ALERTA DO PRÓPRIO SITE -->
+<div class="modal fade" id="modalAviso" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-dark text-start">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold text-warning" id="modalTitulo">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i>Atenção
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-light" id="modalMensagem">
+                Por favor, informe o código da Ordem de Serviço para realizar a busca.
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS do Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function exibirModal(titulo, mensagem, tipo = 'warning') {
+        const modalTitulo = document.getElementById('modalTitulo');
+        const modalMensagem = document.getElementById('modalMensagem');
+        
+        modalTitulo.className = `modal-title fw-bold text-${tipo}`;
+        modalTitulo.innerHTML = tipo === 'danger' 
+            ? `<i class="fa-solid fa-circle-exclamation me-2"></i>${titulo}`
+            : `<i class="fa-solid fa-triangle-exclamation me-2"></i>${titulo}`;
+            
+        modalMensagem.innerText = mensagem;
+        
+        const modal = new bootstrap.Modal(document.getElementById('modalAviso'));
+        modal.show();
+    }
+
+    async function consultarOS() {
+        const codigo = document.getElementById('codigoBusca').value.trim();
+        
+        if (!codigo) {
+            exibirModal('Campo Vazio', 'Por favor, digite o código da OS para consultar.', 'warning');
+            return;
+        }
+
+        try {
+            // Chamada à API para consultar a OS
+            const resposta = await fetch(`http://localhost:5176/api/OrdemServico/status/${codigo}`);
+            
+            if (!resposta.ok) {
+                exibirModal('Não Encontrado', 'Nenhuma Ordem de Serviço foi encontrada com este código.', 'warning');
+                document.getElementById('painelStatus').classList.add('d-none');
+                return;
+            }
+
+            const dados = await resposta.json();
+            
+            document.getElementById('lblCodigo').innerText = dados.codigoRastreio || codigo;
+            document.getElementById('lblStatus').innerText = dados.status || 'Em Processamento';
+            document.getElementById('lblDetalhes').innerText = dados.detalhes || 'Serviço registado no sistema.';
+            document.getElementById('painelStatus').classList.remove('d-none');
+
+        } catch (err) {
+            // Em caso de erro de ligação à API
+            exibirModal('Falha na Conexão', 'Não foi possível ligar ao servidor. Verifique se a API está ativa.', 'danger');
+        }
+    }
+</script>
+
+</body>
+</html>

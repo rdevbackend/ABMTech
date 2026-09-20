@@ -1,0 +1,129 @@
+/* Configurações Gerais */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #050b14 0%, #0a192f 50%, #020617 100%);
+    min-height: 100vh;
+    color: #ffffff;
+}
+
+/* Cabeçalho */
+.header-top {
+    background-color: rgba(5, 11, 20, 0.95);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 15px 0;
+    backdrop-filter: blur(10px);
+}
+
+.logo-text { 
+    font-size: 1.8rem; 
+    font-weight: 800; 
+    color: #fff; 
+    text-transform: uppercase; 
+    text-decoration: none; 
+}
+
+.logo-badge { 
+    background-color: #0d6efd; 
+    color: #fff; 
+    padding: 2px 8px; 
+    border-radius: 4px; 
+    font-size: 0.9rem; 
+}
+
+.nav-link-custom { 
+    color: #cbd5e1; 
+    font-weight: 700; 
+    text-transform: uppercase; 
+    font-size: 0.85rem; 
+    margin: 0 10px; 
+    text-decoration: none; 
+    transition: 0.3s; 
+}
+
+.nav-link-custom:hover { 
+    color: #38bdf8; 
+}
+
+.btn-header-wa {
+    background-color: #25D366;
+    color: white;
+    font-weight: bold;
+    border-radius: 50px;
+    padding: 8px 20px;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
+}
+
+/* Banners e Cartões */
+.hero-banner {
+    padding: 90px 0 60px 0;
+    text-align: center;
+}
+
+.hero-title { 
+    font-size: 3rem; 
+    font-weight: 800; 
+    text-transform: uppercase; 
+    letter-spacing: 2px; 
+}
+
+.card-dark {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+}
+
+.service-card {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s, border-color 0.3s;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    border-color: #38bdf8;
+    box-shadow: 0 10px 25px rgba(56, 189, 248, 0.15);
+}
+
+/* Formulários e Inputs (Texto em Branco com Alto Contraste) */
+.form-label {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+}
+
+.form-control {
+    background-color: rgba(30, 41, 59, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+}
+
+.form-control::placeholder {
+    color: #cbd5e1 !important;
+    opacity: 1;
+}
+
+.form-control:focus {
+    background-color: #1e293b !important;
+    border-color: #38bdf8 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 0.25rem rgba(56, 189, 248, 0.3) !important;
+}
+/* Estilo do Modal Customizado */
+.modal-dark {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.modal-dark code {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #38bdf8;
+    padding: 2px 6px;
+    border-radius: 4px;
+}

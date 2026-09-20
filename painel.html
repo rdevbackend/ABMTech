@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Técnico - ABM Tech</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {  background: linear-gradient(135deg, #050b14 0%, #0a192f 50%, #89898d 100%); }
+        .card-os { transition: transform 0.2s; }
+        .card-os:hover { transform: translateY(-3px); }
+    </style>
+</head>
+<body>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark py-2">
+    <div class="container-fluid">
+        <!-- Logotipo ABM TECH + Painel do Técnico ao lado da barra -->
+        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-4" href="#">
+            <i class="bi bi-phone-fill text-primary fs-3"></i>
+            <span class="text-white">ABM</span>
+            <span class="badge bg-primary fs-6 px-2 py-1">TECH</span>
+            <span class="border-start border-secondary ps-2 ms-1 text-white">
+                Painel do Técnico
+            </span>
+        </a>
+        
+        <!-- Botão para atualizar a lista -->
+        <button class="btn btn-outline-light btn-sm" onclick="carregarOrdens()">
+            <i class="bi bi-arrow-clockwise me-1"></i> Atualizar Lista
+        </button>
+    </div>
+</nav>
+
+    <div class="container my-4">
+       <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-white fw-bold">Gerenciamento de Ordens de Serviço</h2>
+    <span class="badge bg-primary fs-6" id="total-os">0 Ordens</span>
+    </div>
+
+        <!-- Tabela de Ordens de Serviço -->
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Código</th>
+                                <th>Cliente</th>
+                                <th>Aparelho</th>
+                                <th>Defeito</th>
+                                <th>Status Atual</th>
+                                <th>Valor Total</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-os">
+                            <tr>
+                                <td colspan="7" class="text-center py-4">Carregando ordens de serviço...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Edição do Técnico -->
+    <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditarLabel">Atualizar OS: <span id="modal-codigo"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-atualizar">
+                        <input type="hidden" id="modal-id">
+
+                        <div class="mb-3">
+                            <label class="form-label font-weight-bold">Cliente / Aparelho</label>
+                            <input type="text" class="form-control" id="modal-cliente-aparelho" readonly disabled>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="modal-status" class="form-label fw-bold">Status da Manutenção</label>
+                            <select class="form-select" id="modal-status" required>
+                                <option value="Agendado">Agendado</option>
+                                <option value="AguardandoAprovacao">Aguardando Aprovação</option>
+                                <option value="Aprovado">Aprovado</option>
+                                <option value="EmAndamento">Em Andamento</option>
+                                <option value="TestesFinalizados">Testes Finalizados</option>
+                                <option value="ProntoParaRetirada">Pronto para Retirada</option>
+                                <option value="Entregue">Entregue</option>
+                                <option value="Cancelado">Cancelado</option>
+                            </select>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="modal-preco-peca" class="form-label">Preço Peça (Fornecedor)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    <input type="number" step="0.01" class="form-control" id="modal-preco-peca" value="0.00">
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="modal-mao-obra" class="form-label">Mão de Obra</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    <input type="number" step="0.01" class="form-control" id="modal-mao-obra" value="0.00">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info py-2 small mb-0">
+                            * O valor total inclui margem automática de 20% sobre o preço da peça.
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="salvarAtualizacao()">Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const API_URL = "http://localhost:5176/api/OrdemServico";
+    let modalBootstrap;
+    let ordensCache = [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const modalElement = document.getElementById('modalEditar');
+        if (modalElement) {
+            modalBootstrap = new bootstrap.Modal(modalElement);
+        }
+        carregarOrdens();
+    });
+
+    async function carregarOrdens() {
+        try {
+            const response = await fetch(`${API_URL}/todas`);
+            if (!response.ok) throw new Error("Erro ao buscar dados.");
+
+            ordensCache = await response.json();
+            renderizarTabela(ordensCache);
+        } catch (error) {
+            console.error(error);
+            document.getElementById('tabela-os').innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center text-danger py-4">
+                        Erro ao conectar com a API. Certifique-se de que o <strong>dotnet run</strong> está ativo.
+                    </td>
+                </tr>`;
+        }
+    }
+
+    function renderizarTabela(ordens) {
+        // Filtra para remover "Cancelado" (seja string ou valor numérico 7)
+        const ordensAtivas = ordens.filter(os => {
+            const statusStr = String(os.status).toLowerCase();
+            return statusStr !== "cancelado" && os.status !== 7;
+        });
+
+        const tbody = document.getElementById('tabela-os');
+        document.getElementById('total-os').innerText = `${ordensAtivas.length} Ordens Ativas`;
+
+        if (ordensAtivas.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-white">Nenhuma ordem de serviço ativa.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = ordensAtivas.map(os => `
+            <tr>
+                <td><strong class="text-primary">${os.codigoRastreio}</strong></td>
+                <td>${os.nomeCliente}<br><small class="text-muted">${os.whatsappCliente}</small></td>
+                <td>${os.modeloAparelho}</td>
+                <td><small>${os.defeitoRelatado || 'Não informado'}</small></td>
+                <td><span class="badge bg-secondary">${os.status}</span></td>
+                <td><strong>R$ ${(os.valorTotal || 0).toFixed(2)}</strong></td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="abrirModal(${os.id})">
+                        Editar
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function abrirModal(id) {
+        // Busca a ordem garantindo a comparação de tipos (Number)
+        const os = ordensCache.find(item => Number(item.id) === Number(id));
+        if (!os) return;
+
+        document.getElementById('modal-id').value = os.id;
+        document.getElementById('modal-codigo').innerText = os.codigoRastreio;
+        document.getElementById('modal-cliente-aparelho').value = `${os.nomeCliente} - ${os.modeloAparelho}`;
+        document.getElementById('modal-status').value = os.status;
+        document.getElementById('modal-preco-peca').value = os.precoPeca || 0;
+        document.getElementById('modal-mao-obra').value = os.maoDeObra || 0;
+
+        if (modalBootstrap) {
+            modalBootstrap.show();
+        } else {
+            const modalElement = document.getElementById('modalEditar');
+            modalBootstrap = new bootstrap.Modal(modalElement);
+            modalBootstrap.show();
+        }
+    }
+
+    async function salvarAtualizacao() {
+        const id = document.getElementById('modal-id').value;
+        const statusStr = document.getElementById('modal-status').value;
+
+        // Mapeamento idêntico ao enum do C#
+        const statusEnumMap = {
+            "Agendado": 0,
+            "AguardandoAprovacao": 1,
+            "Aprovado": 2,
+            "EmAndamento": 3,
+            "TestesFinalizados": 4,
+            "ProntoParaRetirada": 5,
+            "Entregue": 6,
+            "Cancelado": 7
+        };
+
+        const novoStatusEnum = statusEnumMap[statusStr] !== undefined ? statusEnumMap[statusStr] : parseInt(statusStr);
+
+        const payload = {
+            novoStatus: novoStatusEnum,
+            precoPecaFornecedor: parseFloat(document.getElementById('modal-preco-peca').value) || 0,
+            valorMaoDeObra: parseFloat(document.getElementById('modal-mao-obra').value) || 0
+        };
+
+        try {
+            const response = await fetch(`${API_URL}/atualizar/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                modalBootstrap.hide();
+                await carregarOrdens();
+            } else {
+                alert("Erro ao atualizar a ordem de serviço.");
+            }
+        } catch (error) {
+            console.error("Erro na requisição:", error);
+            alert("Falha de conexão com a API.");
+        }
+    }
+</script>
+</body>
+</html>
