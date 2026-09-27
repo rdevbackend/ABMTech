@@ -26,7 +26,8 @@
                     <i class="fa-regular fa-calendar-check me-2 text-info"></i>Solicitar Agendamento
                 </h3>
                 
-                <form id="formAgendamento">
+                <!-- Substituído <form> por <div> para eliminar o recarregamento nativo -->
+                <div id="formAgendamento">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Seu Nome *</label>
@@ -50,13 +51,13 @@
                             </button>
                         </div>
                     </div>
-                </form>
+                </div>
 
                 <hr class="my-4 border-secondary">
 
                 <div class="text-center">
                     <p class="text-light mb-2">Não sabe o defeito do seu celular?</p>
-                    <button onclick="abrirWhatsapp()" class="btn btn-success fw-bold rounded-pill px-4 py-2">
+                    <button type="button" onclick="abrirWhatsapp()" class="btn btn-success fw-bold rounded-pill px-4 py-2">
                         <i class="fa-brands fa-whatsapp me-2"></i>Falar Direto com Técnico
                     </button>
                 </div>
@@ -108,7 +109,6 @@
         const modelo = document.getElementById('modeloAparelho').value.trim();
         const defeito = document.getElementById('defeitoRelatado').value.trim();
 
-        // VALIDAÇÃO: Verifica se os campos obrigatórios estão preenchidos antes de chamar a API
         if (!nome || !whatsapp || !modelo) {
             exibirModal(
                 'Campos Obrigatórios', 
@@ -132,20 +132,28 @@
                 body: JSON.stringify(dados)
             });
 
-            if (!resposta.ok) {
-                throw new Error('Servidor retornou erro');
-            }
+            if (!resposta.ok) throw new Error('Servidor retornou erro');
 
             const resultado = await resposta.json();
+            const codigo = resultado.codigoRastreio || "Código Gerado";
+
+            // Limpa os campos individualmente
+            document.getElementById('nomeCliente').value = '';
+            document.getElementById('whatsappCliente').value = '';
+            document.getElementById('modeloAparelho').value = '';
+            document.getElementById('defeitoRelatado').value = '';
+
+            // Exibe e preenche a caixa do resultado
             const alertDiv = document.getElementById('resultadoAgendamento');
             alertDiv.classList.remove('d-none');
-            alertDiv.innerHTML = `<strong>Sucesso!</strong> Guarde seu código de rastreio: <strong>${resultado.codigoRastreio}</strong>`;
-            
-            // Limpa os campos do formulário após o envio correto
-            document.getElementById('formAgendamento').reset();
+            alertDiv.innerHTML = `<strong>Sucesso!</strong> Guarde seu código de rastreio: <strong class="fs-5 text-dark">${codigo}</strong>`;
+
+            // Rola até o código
+            setTimeout(() => {
+                alertDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
 
         } catch (err) {
-            // Este catch agora só roda se a API estiver offline de verdade
             exibirModal(
                 'Falha na Conexão', 
                 'Não foi possível conectar ao servidor. Verifique se a sua API em C# está rodando com "dotnet run".', 
