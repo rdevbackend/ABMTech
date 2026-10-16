@@ -168,7 +168,7 @@
         
         try {
             // URL corrigida para corresponder ao endpoint [HttpGet("todas")] do C#
-            const resposta = await fetch('http://localhost:5176/api/OrdemServico/todas');
+            const resposta = await fetch('https://abmtech.onrender.com/api/OrdemServico/todas');
             if (!resposta.ok) throw new Error(`Erro HTTP ${resposta.status}`);
 
             const agendamentos = await resposta.json();
@@ -228,7 +228,7 @@
     async function atualizarOS(id, novoStatus, precoPeca, maoDeObra) {
         try {
             // URL corrigida para corresponder ao endpoint [HttpPut("atualizar/{id}")] do C#
-            const resposta = await fetch(`http://localhost:5176/api/OrdemServico/atualizar/${id}`, {
+            const resposta = await fetch(`https://abmtech.onrender.com/api/OrdemServico/atualizar/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

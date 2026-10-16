@@ -41,5 +41,6 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
 }
-
+// Adicione isto logo antes de app.Run();
+app.MapGet("/", () => Results.Ok(new { status = "API ABMTech Online", version = "1.0" }));
 app.Run();

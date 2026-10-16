@@ -265,7 +265,7 @@
         };
 
         try {
-            const resposta = await fetch('http://localhost:5176/api/OrdemServico/agendar', {
+            const resposta = await fetch('https://abmtech.onrender.com/api/OrdemServico/agendar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dados)

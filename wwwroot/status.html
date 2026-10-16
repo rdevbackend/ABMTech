@@ -132,7 +132,7 @@
         }
 
         try {
-            const resposta = await fetch(`http://localhost:5176/api/OrdemServico/rastrear/${codigo}`);
+            const resposta = await fetch(`https://abmtech.onrender.com/api/OrdemServico/rastrear/${codigo}`);
             
             if (!resposta.ok) {
                 throw new Error('OS não encontrada');
