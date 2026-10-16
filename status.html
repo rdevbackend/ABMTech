@@ -3,115 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Status da Ordem de Serviço - ABM Tech</title>
+    <title>Consultar Status OS - ABM Tech</title>
     
     <!-- Bootstrap e FontAwesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- CSS externo -->
+    <!-- CSS personalizado -->
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        .status-card {
+            background: rgba(13, 19, 36, 0.95);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 24px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 10px 40px rgba(0, 114, 255, 0.2);
+        }
+
+        /* Campo de texto de busca */
+        .custom-form-control {
+            background: #090d1a !important;
+            border: 1px solid rgba(56, 189, 248, 0.3) !important;
+            color: #ffffff !important;
+            border-radius: 12px 0 0 12px !important;
+            padding: 12px 16px !important;
+            transition: all 0.3s;
+        }
+
+        .custom-form-control:focus {
+            border-color: #00f2fe !important;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.35) !important;
+            background: #0d1326 !important;
+        }
+
+        .custom-form-control::placeholder {
+            color: #94a3b8 !important;
+            opacity: 1;
+        }
+
+        /* Botão de Pesquisa */
+        .btn-action-primary {
+            background: linear-gradient(135deg, #0072ff 0%, #00f2fe 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 0 12px 12px 0;
+            font-weight: 700;
+            padding: 12px 28px;
+            box-shadow: 0 4px 20px rgba(0, 114, 255, 0.4);
+            transition: all 0.3s;
+        }
+
+        .btn-action-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 242, 254, 0.6);
+            color: #ffffff;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.08);
+            color: #e2e8f0;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            color: #00f2fe;
+            border-color: #00f2fe;
+            background: rgba(0, 242, 254, 0.1);
+        }
+
+        .text-subhead {
+            color: #cbd5e1 !important;
+        }
+
+        /* Caixa de Resultado */
+        .result-box {
+            background: #090d1a;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.15);
+        }
+    </style>
 </head>
 <body>
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <a href="index.html" class="btn btn-outline-light mb-4 rounded-pill px-4">
-                <i class="fa-solid fa-arrow-left me-2"></i>Voltar ao Início
-            </a>
-            
-            <div class="card card-dark p-4 p-md-5 text-center shadow-lg">
-                <h3 class="fw-bold mb-3 text-white">
-                    <i class="fa-solid fa-magnifying-glass text-info me-2"></i>Consultar OS
-                </h3>
-                <p class="text-light small mb-4">Digite o código recebido para acompanhar o seu conserto.</p>
-                
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control form-control-lg" id="codigoBusca" placeholder="Ex: ABM-8492">
-                    <button class="btn btn-primary fw-bold px-4" onclick="consultarOS()">Buscar</button>
+<div class="container py-5 min-vh-100 d-flex flex-column justify-content-center align-items-center">
+    <div class="col-lg-7 col-md-9 w-100" style="max-width: 700px;">
+        <a href="index.html" class="btn btn-back mb-4 text-decoration-none d-inline-flex align-items-center">
+            <i class="fa-solid fa-arrow-left me-2"></i>Voltar ao Início
+        </a>
+        
+        <div class="card status-card p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="p-3 d-inline-block rounded-circle mb-3" style="background: rgba(0, 242, 254, 0.15); border: 1px solid rgba(0, 242, 254, 0.4);">
+                    <i class="fa-solid fa-magnifying-glass fa-2x" style="color: #00f2fe;"></i>
                 </div>
-
-                <div id="painelStatus" class="mt-4 p-4 border border-secondary rounded-3 bg-dark text-start d-none">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="fw-bold text-white">Código: <span id="lblCodigo" class="text-info">ABM-8492</span></span>
-                        <span id="lblStatus" class="badge bg-warning text-dark fs-6">Em Manutenção</span>
-                    </div>
-                    <p class="mb-1 text-light small">Detalhes do Serviço:</p>
-                    <p id="lblDetalhes" class="fw-semibold text-white">Aparelho na bancada a realizar testes de componentes.</p>
-                </div>
+                <h3 class="fw-bold text-white mb-1">Rastrear Ordem de Serviço</h3>
+                <p class="text-subhead small mb-0">Insira o seu código para consultar o estado do seu aparelho</p>
             </div>
+
+            <div class="input-group mb-3">
+                <input type="text" id="codigoRastreio" class="form-control custom-form-control" placeholder="Ex: ABM-1234">
+                <button type="button" onclick="consultarOS()" class="btn btn-action-primary">
+                    <i class="fa-solid fa-search me-2"></i>Consultar
+                </button>
+            </div>
+
+            <div id="resultadoRastreio" class="mt-4 p-4 result-box text-start d-none"></div>
         </div>
     </div>
 </div>
 
-<!-- MODAL DE ALERTA DO PRÓPRIO SITE -->
-<div class="modal fade" id="modalAviso" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content modal-dark text-start">
-            <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold text-warning" id="modalTitulo">
-                    <i class="fa-solid fa-triangle-exclamation me-2"></i>Atenção
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-light" id="modalMensagem">
-                Por favor, informe o código da Ordem de Serviço para realizar a busca.
-            </div>
-            <div class="modal-footer border-0">
-                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Fechar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- JS do Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    function exibirModal(titulo, mensagem, tipo = 'warning') {
-        const modalTitulo = document.getElementById('modalTitulo');
-        const modalMensagem = document.getElementById('modalMensagem');
-        
-        modalTitulo.className = `modal-title fw-bold text-${tipo}`;
-        modalTitulo.innerHTML = tipo === 'danger' 
-            ? `<i class="fa-solid fa-circle-exclamation me-2"></i>${titulo}`
-            : `<i class="fa-solid fa-triangle-exclamation me-2"></i>${titulo}`;
-            
-        modalMensagem.innerText = mensagem;
-        
-        const modal = new bootstrap.Modal(document.getElementById('modalAviso'));
-        modal.show();
-    }
-
     async function consultarOS() {
-        const codigo = document.getElementById('codigoBusca').value.trim();
-        
+        const codigoInput = document.getElementById('codigoRastreio');
+        const codigo = codigoInput.value.trim();
+        const resultadoDiv = document.getElementById('resultadoRastreio');
+
         if (!codigo) {
-            exibirModal('Campo Vazio', 'Por favor, digite o código da OS para consultar.', 'warning');
+            alert('Por favor, digite um código de rastreio!');
             return;
         }
 
         try {
-            // Chamada à API para consultar a OS
-            const resposta = await fetch(`http://localhost:5176/api/OrdemServico/status/${codigo}`);
+            const resposta = await fetch(`http://localhost:5176/api/OrdemServico/rastrear/${codigo}`);
             
             if (!resposta.ok) {
-                exibirModal('Não Encontrado', 'Nenhuma Ordem de Serviço foi encontrada com este código.', 'warning');
-                document.getElementById('painelStatus').classList.add('d-none');
-                return;
+                throw new Error('OS não encontrada');
             }
 
-            const dados = await resposta.json();
+            const os = await resposta.json();
+            resultadoDiv.classList.remove('d-none');
             
-            document.getElementById('lblCodigo').innerText = dados.codigoRastreio || codigo;
-            document.getElementById('lblStatus').innerText = dados.status || 'Em Processamento';
-            document.getElementById('lblDetalhes').innerText = dados.detalhes || 'Serviço registado no sistema.';
-            document.getElementById('painelStatus').classList.remove('d-none');
-
+            resultadoDiv.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-3">
+                    <h5 class="fw-bold text-white mb-0">Detalhes do Agendamento</h5>
+                    <span class="badge px-3 py-2 rounded-pill fs-6" style="background: rgba(0, 242, 254, 0.2); color: #00f2fe; border: 1px solid #00f2fe;">
+                        ${os.status || 'Pendente'}
+                    </span>
+                </div>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <p class="text-subhead mb-1"><strong>Cliente:</strong> <span class="text-white">${os.nomeCliente}</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="text-subhead mb-1"><strong>Aparelho:</strong> <span class="text-white">${os.modeloAparelho}</span></p>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <p class="text-subhead mb-0"><strong>Defeito Relatado:</strong> <span class="text-white">${os.defeitoRelatado || 'Não informado'}</span></p>
+                    </div>
+                </div>
+            `;
         } catch (err) {
-            // Em caso de erro de ligação à API
-            exibirModal('Falha na Conexão', 'Não foi possível ligar ao servidor. Verifique se a API está ativa.', 'danger');
+            resultadoDiv.classList.remove('d-none');
+            resultadoDiv.innerHTML = `
+                <div class="text-center py-2">
+                    <i class="fa-solid fa-circle-xmark fa-2x text-danger mb-2"></i>
+                    <p class="text-subhead mb-0">Nenhuma Ordem de Serviço encontrada para o código <strong class="text-white">${codigo}</strong>.</p>
+                </div>
+            `;
         }
     }
 </script>

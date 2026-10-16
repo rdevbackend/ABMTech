@@ -1,129 +1,177 @@
-/* Configurações Gerais */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg-dark: #060913;
+  --card-bg: rgba(13, 19, 36, 0.75);
+  --border-color: rgba(56, 189, 248, 0.15);
+  --accent-blue: #0072ff;
+  --accent-cyan: #00f2fe;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+}
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #050b14 0%, #0a192f 50%, #020617 100%);
-    min-height: 100vh;
-    color: #ffffff;
+  background-color: var(--bg-dark);
+  background-image: 
+    radial-gradient(at 20% 20%, rgba(0, 114, 255, 0.15) 0px, transparent 50%),
+    radial-gradient(at 80% 80%, rgba(0, 242, 254, 0.1) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-main);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-/* Cabeçalho */
-.header-top {
-    background-color: rgba(5, 11, 20, 0.95);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 15px 0;
-    backdrop-filter: blur(10px);
+/* Header & Navbar */
+.navbar-custom {
+  background: rgba(6, 9, 19, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
 }
 
-.logo-text { 
-    font-size: 1.8rem; 
-    font-weight: 800; 
-    color: #fff; 
-    text-transform: uppercase; 
-    text-decoration: none; 
+.nav-link-custom {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+  text-decoration: none;
 }
 
-.logo-badge { 
-    background-color: #0d6efd; 
-    color: #fff; 
-    padding: 2px 8px; 
-    border-radius: 4px; 
-    font-size: 0.9rem; 
+.nav-link-custom:hover {
+  color: var(--accent-cyan);
 }
 
-.nav-link-custom { 
-    color: #cbd5e1; 
-    font-weight: 700; 
-    text-transform: uppercase; 
-    font-size: 0.85rem; 
-    margin: 0 10px; 
-    text-decoration: none; 
-    transition: 0.3s; 
+/* Botão WhatsApp */
+.btn-whatsapp {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  border-radius: 50px;
+  padding: 8px 20px;
+  font-weight: 700;
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
+  transition: all 0.3s;
 }
 
-.nav-link-custom:hover { 
-    color: #38bdf8; 
+.btn-whatsapp:hover {
+  background: rgba(34, 197, 94, 0.25);
+  color: #4ade80;
+  box-shadow: 0 0 25px rgba(34, 197, 94, 0.4);
+  transform: translateY(-2px);
 }
 
-.btn-header-wa {
-    background-color: #25D366;
-    color: white;
-    font-weight: bold;
-    border-radius: 50px;
-    padding: 8px 20px;
-    text-decoration: none;
-    box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
+/* Hero Section */
+.hero-section {
+  padding: 100px 0 60px 0;
 }
 
-/* Banners e Cartões */
-.hero-banner {
-    padding: 90px 0 60px 0;
-    text-align: center;
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, #ffffff 30%, #a5f3fc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.hero-title { 
-    font-size: 3rem; 
-    font-weight: 800; 
-    text-transform: uppercase; 
-    letter-spacing: 2px; 
+.hero-subtitle {
+  color: var(--accent-cyan);
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-size: 0.9rem;
+  text-transform: uppercase;
 }
 
-.card-dark {
-    background: rgba(15, 23, 42, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(12px);
-    border-radius: 20px;
+/* Botões do Hero */
+.btn-hero-primary {
+  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-cyan) 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 50px;
+  padding: 14px 32px;
+  font-weight: 700;
+  box-shadow: 0 4px 25px rgba(0, 114, 255, 0.4);
+  transition: all 0.3s;
 }
 
+.btn-hero-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 35px rgba(0, 242, 254, 0.6);
+  color: #ffffff;
+}
+
+.btn-hero-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 50px;
+  padding: 14px 32px;
+  font-weight: 700;
+  transition: all 0.3s;
+}
+
+.btn-hero-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent-cyan);
+  color: #ffffff;
+}
+
+/* Cards de Serviços */
 .service-card {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    background: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(10px);
-    transition: transform 0.3s, border-color 0.3s;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 30px 20px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
 }
 
 .service-card:hover {
-    transform: translateY(-5px);
-    border-color: #38bdf8;
-    box-shadow: 0 10px 25px rgba(56, 189, 248, 0.15);
+  border-color: var(--accent-cyan);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 242, 254, 0.15);
 }
 
-/* Formulários e Inputs (Texto em Branco com Alto Contraste) */
-.form-label {
-    color: #ffffff !important;
-    font-weight: 600 !important;
-    font-size: 0.95rem;
-    margin-bottom: 6px;
+.service-icon {
+  font-size: 2.2rem;
+  color: var(--accent-cyan);
+  margin-bottom: 15px;
+}
+.logo-cyberpunk {
+    height: 60px; /* Aumenta a escala visual do logo */
+    width: auto;
+    object-fit: contain;
+    mix-blend-mode: screen; /* Elimina o fundo e integra os elementos azuis/brancos ao cabeçalho */
+    filter: drop-shadow(0 0 12px rgba(0, 242, 254, 0.6)); /* Glow neon alinhado ao tema Cyberpunk */
+    transition: transform 0.3s ease, filter 0.3s ease;
 }
 
-.form-control {
-    background-color: rgba(30, 41, 59, 0.9) !important;
-    border: 1px solid rgba(255, 255, 255, 0.25) !important;
-    color: #ffffff !important;
+/* Interatividade para não parecer estático */
+.logo-cyberpunk:hover {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 20px rgba(0, 242, 254, 0.9));
+
 }
 
-.form-control::placeholder {
-    color: #cbd5e1 !important;
-    opacity: 1;
+.logo-cyberpunk:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 25px rgba(0, 242, 254, 0.8);
+}
+.logo-ifood-style {
+    height: 110px;                                  /* Tamanho grande e em destaque */
+    width: auto;
+    object-fit: contain;
+    mix-blend-mode: screen;                        /* Recorta tons escuros */
+    filter: brightness(1.3) contrast(180%) drop-shadow(0 0 10px rgba(0, 242, 254, 0.6)); /* Ouve o tom do fundo e faz o quadrado desaparecer */
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    transition: transform 0.3s ease;
 }
 
-.form-control:focus {
-    background-color: #1e293b !important;
-    border-color: #38bdf8 !important;
-    color: #ffffff !important;
-    box-shadow: 0 0 0 0.25rem rgba(56, 189, 248, 0.3) !important;
-}
-/* Estilo do Modal Customizado */
-.modal-dark {
-    background: #0f172a;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.modal-dark code {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #38bdf8;
-    padding: 2px 6px;
-    border-radius: 4px;
+.logo-ifood-style:hover {
+    transform: scale(1.06);
 }
