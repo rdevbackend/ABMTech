@@ -1,21 +1,21 @@
-# Estágio de Compilação (Build)
+# Estágio de Compilação e Publicação Auto-Contida (.NET 10)
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# Copia os ficheiros e restaura as dependências
+# Copia e restaura dependências
 COPY *.csproj ./
 RUN dotnet restore
 
-# Copia todo o código e compila
+# Copia o código e publica como Auto-Contido (Self-Contained)
 COPY . ./
-RUN dotnet publish -c Release -o /app/out
+RUN dotnet publish -c Release -r linux-x64 --self-contained true -o /app/out
 
-# Estágio de Execução (Runtime)
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+# Estágio de Execução usando imagem base Linux Ubuntu
+FROM mcr.microsoft.com/dotnet/runtime-deps:10.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/out .
 
-# Define a porta padrão
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "ABMTech.dll"]
+# Executa o executável gerado diretamente
+ENTRYPOINT ["./ABMTech.Api"]
