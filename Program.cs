@@ -43,4 +43,8 @@ using (var scope = app.Services.CreateScope())
 }
 // Adicione isto logo antes de app.Run();
 app.MapGet("/", () => Results.Ok(new { status = "API ABMTech Online", version = "1.0" }));
+app.UseDefaultFiles(); // Procura automaticamente pelo index.html
+app.UseStaticFiles();  // Permite servir HTML, CSS, imagens e JS
+
 app.Run();
+
