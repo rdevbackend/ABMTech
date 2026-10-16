@@ -1,50 +1,41 @@
-using Microsoft.EntityFrameworkCore;
-using ABMTech.Api.Data;
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuração para o Render ler a porta dinâmica
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5176";
-builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
-// Configuração da base de dados com SQLite
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=abmtech.db"));
-
-// 2. Adicionar suporte a Controllers e OpenAPI
+// 1. Configuração de Controllers e Swagger
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-// 3. Adicionar política de CORS
+// 2. Configuração do CORS para permitir requisições externas
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("PermitirTudo", policy =>
+    options.AddPolicy("AllowAll", policy =>
     {
         policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 
+// 3. Configuração de porta dinâmica para o Render (lê a variável PORT do ambiente)
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+// 4. Configuração do Swagger (Habilitado no Render e em desenvolvimento)
+app.UseSwagger();
+app.UseSwaggerUI();
 
-app.UseCors("PermitirTudo");
+// 5. Aplicação das políticas de segurança e CORS
+app.UseCors("AllowAll");
+
+// 6. Suporte a Arquivos Estáticos (Servir o Frontend da pasta wwwroot)
+app.UseDefaultFiles(); // Procura automaticamente por index.html
+app.UseStaticFiles();  // Permite servir ficheiros HTML, CSS, JS, imagens, etc.
+
 app.UseAuthorization();
+
+// 7. Mapeamento das rotas da API
 app.MapControllers();
 
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
-}
-// Adicione isto logo antes de app.Run();
-app.MapGet("/", () => Results.Ok(new { status = "API ABMTech Online", version = "1.0" }));
-app.UseDefaultFiles(); // Procura automaticamente pelo index.html
-app.UseStaticFiles();  // Permite servir HTML, CSS, imagens e JS
-
 app.Run();
-
