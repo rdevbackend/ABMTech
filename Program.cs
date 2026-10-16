@@ -3,6 +3,9 @@ using ABMTech.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configuração para o Render ler a porta dinâmica
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5176";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 // Configuração da base de dados com SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=abmtech.db"));
