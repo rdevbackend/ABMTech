@@ -9,7 +9,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddControllers();
 
-// 2. Configuração do CORS
+// 2. Configuração de CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -22,32 +22,24 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// 3. Força a criação do banco de dados e das tabelas no arranque do servidor
+// 3. Inicialização e criação da base de dados no arranque do Render
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    try
+    var context = services.GetRequiredService<AppDbContext>();
+    
+    var dbPath = context.Database.GetDbConnection().DataSource;
+    if (!string.IsNullOrEmpty(dbPath))
     {
-        var context = services.GetRequiredService<AppDbContext>();
-        
-        // Garante a criação da diretoria do ficheiro .db se não existir
-        var dbPath = context.Database.GetDbConnection().DataSource;
-        if (!string.IsNullOrEmpty(dbPath))
+        var dbDir = Path.GetDirectoryName(dbPath);
+        if (!string.IsNullOrEmpty(dbDir) && !Directory.Exists(dbDir))
         {
-            var dbDir = Path.GetDirectoryName(dbPath);
-            if (!string.IsNullOrEmpty(dbDir) && !Directory.Exists(dbDir))
-            {
-                Directory.CreateDirectory(dbDir);
-            }
+            Directory.CreateDirectory(dbDir);
         }
-        
-        // Cria a base de dados e a tabela 'OrdensServico' imediatamente
-        context.Database.EnsureCreated();
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Erro ao criar base de dados: {ex.Message}");
-    }
+    
+    // Força a criação das tabelas no SQLite
+    context.Database.EnsureCreated();
 }
 
 app.UseCors("AllowAll");
