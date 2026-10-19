@@ -1,15 +1,13 @@
 using Microsoft.EntityFrameworkCore;
-using ABMTech.Api.Data; // Ajusta este namespace caso o teu DbContext esteja noutra pasta
+using ABMTech.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Registo do Base de Dados / DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllers();
 
-// 2. Configuração ampla de CORS para evitar qualquer bloqueio
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -21,6 +19,14 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Garante que a base de dados e as tabelas são criadas automaticamente no arranque
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<AppDbContext>();
+    context.Database.EnsureCreated();
+}
 
 app.UseCors("AllowAll");
 
