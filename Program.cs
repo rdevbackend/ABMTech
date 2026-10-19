@@ -1,13 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using ABMTech.Api.Data;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configura o caminho absoluto exato para o SQLite no diretório da aplicação
+var folder = AppDomain.CurrentDomain.BaseDirectory;
+var dbPath = Path.Join(folder, "abmtech.db");
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? $"Data Source={dbPath}"));
 
 builder.Services.AddControllers();
 
+// Configuração ampla de CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -20,25 +26,16 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Garante a criação da base de dados e da tabela de forma segura
+// Inicialização e criação forçada da base de dados e tabela no arranque
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<AppDbContext>();
     
-    var dbPath = context.Database.GetDbConnection().DataSource;
-    if (!string.IsNullOrEmpty(dbPath))
-    {
-        var dbDir = Path.GetDirectoryName(dbPath);
-        if (!string.IsNullOrEmpty(dbDir) && !Directory.Exists(dbDir))
-        {
-            Directory.CreateDirectory(dbDir);
-        }
-    }
-    
+    // Garante a criação via EF Core
     context.Database.EnsureCreated();
 
-    // Garante que a tabela OrdensServico existe mesmo se o ficheiro SQLite já existir vazio
+    // Garante a criação via SQL bruto para nunca dar erro de tabela inexistente
     context.Database.ExecuteSqlRaw(@"
         CREATE TABLE IF NOT EXISTS ""OrdensServico"" (
             ""Id"" INTEGER NOT NULL CONSTRAINT ""PK_OrdensServico"" PRIMARY KEY AUTOINCREMENT,
@@ -58,7 +55,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseCors("AllowAll");
-
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
