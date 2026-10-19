@@ -3,13 +3,11 @@ using ABMTech.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Registo do DbContext com SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllers();
 
-// 2. Configuração de CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -22,7 +20,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// 3. Inicialização e criação da base de dados no arranque do Render
+// Garante a criação da base de dados e da tabela de forma segura
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -38,8 +36,25 @@ using (var scope = app.Services.CreateScope())
         }
     }
     
-    // Força a criação das tabelas no SQLite
     context.Database.EnsureCreated();
+
+    // Garante que a tabela OrdensServico existe mesmo se o ficheiro SQLite já existir vazio
+    context.Database.ExecuteSqlRaw(@"
+        CREATE TABLE IF NOT EXISTS ""OrdensServico"" (
+            ""Id"" INTEGER NOT NULL CONSTRAINT ""PK_OrdensServico"" PRIMARY KEY AUTOINCREMENT,
+            ""CodigoRastreio"" TEXT NULL,
+            ""NomeCliente"" TEXT NULL,
+            ""WhatsappCliente"" TEXT NULL,
+            ""ModeloAparelho"" TEXT NULL,
+            ""DefeitoRelatado"" TEXT NULL,
+            ""PrecoPecaFornecedor"" TEXT NULL,
+            ""MargemLucroPecaPorcentagem"" TEXT NULL,
+            ""ValorMaoDeObra"" TEXT NULL,
+            ""ValorTotalCalculado"" TEXT NULL,
+            ""Status"" INTEGER NOT NULL,
+            ""DataCriacao"" TEXT NOT NULL
+        );
+    ");
 }
 
 app.UseCors("AllowAll");
